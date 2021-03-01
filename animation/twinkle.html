@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<html>
+<head>
+  <title></title>
+  <style type="text/css">
+    #box {
+      margin: 200px;
+      width: 200px;
+      height: 200px;
+      background: white;
+    }
+  </style>
+</head>
+
+<body>
+<div id="box"></div>
+</body>
+<script type="text/javascript">
+
+  setTimeout(() => {
+    document.getElementById('box').style.background = "red"
+    setTimeout(() => {
+      document.getElementById('box').style.background = "blue"
+    })
+  })
+
+
+</script>
+</html>
