@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>实现一个全局的Model弹窗</title>
+</head>
+<body>
+
+<button id="open">打开</button>
+<button id="close">关闭</button>
+</body>
+<style>
+#model{
+  height:200px;
+  width: 200px;
+  border:1px solid #f4f4f4;
+  text-align: center;
+}
+</style>
+<script>
+const Model = (function () {
+  let model = null;
+  return function () {
+    if(!model){
+      model = document.createElement('div')
+      model.innerHTML =  '全局唯一弹窗';
+      model.style.display = 'none';
+      model.id = 'model'
+      document.body.appendChild(model)
+    }
+    return model
+  }
+})()
+  document.getElementById('open').addEventListener('click',function () {
+    const model = new Model();
+    model.style.display = 'block'
+  })
+document.getElementById('close').addEventListener('click',function () {
+  const model = new Model();
+  model.style.display = 'none'
+})
+</script>
+</html>

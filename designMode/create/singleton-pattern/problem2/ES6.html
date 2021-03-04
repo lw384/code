@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ES6版本实现全局仅一个model</title>
+</head>
+<body>
+<button id="open">打开</button>
+<button id="close">关闭</button>
+</body>
+<style>
+  #model{
+    height:200px;
+    width: 200px;
+    border:1px solid #f4f4f4;
+    text-align: center;
+  }
+</style>
+<script>
+class Model{
+  static getInstance(){
+    if(!Model.instance){
+      Model.instance = new Model();
+      const model = document.createElement('div')
+      model.id='model';
+      model.style.display = 'none'
+      model.innerHTML = '全局唯一的弹窗'
+      document.body.appendChild(model)
+      Model.instance._model = model
+    }
+    return Model.instance
+  }
+}
+
+document.getElementById('open').addEventListener('click',function () {
+  const model = Model.getInstance()._model;
+  model.style.display = 'block'
+})
+document.getElementById('close').addEventListener('click',function () {
+  const model =   Model.getInstance()._model;
+  model.style.display = 'none'
+})
+</script>
+
+</html>
