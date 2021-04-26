@@ -1,4 +1,4 @@
-import { Promise }from "./promise2.js";
+let Promise = require("./promise.js");
 
 var myP = new Promise(function(resolve, reject){
   console.log('执行')

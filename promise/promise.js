@@ -1,10 +1,10 @@
 // promise构造函数接受一个执行函数，执行函数执行完同步或者异步操作后，调用它的两个参数resolve reject
-var promise = new Promise(function(resolve,reject){
-  /*
-  * 成功：resolve
-  * 失败：reject
-  * */
-});
+// var promise = new Promise(function(resolve,reject){
+//   /*
+//   * 成功：resolve
+//   * 失败：reject
+//   * */
+// });
 try{
   module.exports = Promise
 }catch (e) {}
@@ -27,7 +27,7 @@ function Promise(executor) {
     if(value instanceof Promise){
       return value.then(resolve,reject)
     }
-    setTimeout(function () {
+    setTimeout(function () { // 标准规定需要异步执行所有回调函数
       if(self.status === 'pending'){
         self.status = 'resolved';
         self.data = value;
@@ -59,6 +59,7 @@ function Promise(executor) {
 }
 
 /*
+ * 不同promise的交互
  * resolvePromise函数即为根据x的值来决定promise2的状态的函数
  * 也即标准中的[Promise Resolution Procedure](https://promisesaplus.com/#point-47)
  * x为`promise2 = promise1.then(onResolved, onRejected)`里`onResolved/onRejected`的返回值
@@ -69,7 +70,7 @@ function resolvePromise(promise2,x,resolve,reject){
   var then;
   var thenCalledOrThrow = false;
 
-  if( promise2 === x){
+  if( promise2 === x){  // 2.3.1
     return reject(new TypeError('Chaining cycle detected for promise!'))
   }
   if(x instanceof Promise){
@@ -82,11 +83,13 @@ function resolvePromise(promise2,x,resolve,reject){
     }
     return
   }
-  if((x !==null)&&(typeof x === 'object')||(typeof x === 'function')){
+
+  if((x !== null)&&((typeof x === 'object')||(typeof x === 'function'))){
     try{
       then = x.then
       if(typeof then === 'function'){
         then.call(x,function rs(y) {
+          if (thenCalledOrThrow) return   // 测试用例报错 2.3.3 因为此处没有并判断thenable对象 只能调用一次
           thenCalledOrThrow = true
           return resolvePromise(promise2,y,resolve,reject)
         },function rj(r) {
@@ -106,13 +109,19 @@ function resolvePromise(promise2,x,resolve,reject){
   }else {
     resolve(x)
   }
-
 }
 
+/*
+* then方法需挂载在promise原型上
+* then 方法需要返回一个promise 新的对象
+* 每个promise对象可以多次调用then方法，所以then方法不能返回this，因为每一次的返回promise不同
+* then方法接受两个参数，分别是promise成功或失败后的回调
+* */
 Promise.prototype.then = function(onResolved,onRejected){
   var self =this
-  var promise2
+  var promise2   // promise2的取值取决于then里的函数的返回值
   // 规范中写明，then 的参数不是函数则省略（2.2.1） 且必须返回一个promise对象; （解决穿透？？？的问题）
+  // 在then里执行onResolved 或者 onRejected,并根据返回值来确定promise2的结果
   onResolved = typeof onResolved === 'function' ? onResolved : function(v){return v};
   onRejected = typeof onRejected === 'function' ? onRejected : function (r) {throw r};
   if (self.status === 'resolved'){
@@ -121,10 +130,11 @@ Promise.prototype.then = function(onResolved,onRejected){
       setTimeout(function () {
         try {
           var x = onResolved(self.data)
-          if (x instanceof Promise){ // 如果onResolved返回值是一个promise，则取它的值直接作为promise2 的结果
-            x.then(resolve,reject)
-          }
-          resolve(x) // 否则，以它的返回值作为promise2的结果
+          resolvePromise(promise2,x,resolve,reject)
+          // if (x instanceof Promise){ // 如果onResolved返回值是一个promise，则取它的值直接作为promise2 的结果
+          //   x.then(resolve,reject)
+          // }
+          // resolve(x) // 否则，以它的返回值作为promise2的结果
         }catch (e) {
           reject(e)  // 出错则捕获错误作为promise2 的结果
         }
@@ -132,14 +142,15 @@ Promise.prototype.then = function(onResolved,onRejected){
     })
   }
   if (self.status === 'rejected') {
-    setTimeout(function () {
       return promise2 = new Promise(function (resolve,reject) {
+        setTimeout(function () {
         try {
           var x = onRejected(self.data)
-          if (x instanceof Promise){
-            x.then(resolve,reject)
-          }
-          reject(x)
+          resolvePromise(promise2,x,resolve,reject)
+          // if (x instanceof Promise){
+          //   x.then(resolve,reject)
+          // }
+          // reject(x)
         }catch (e) {
           reject(e)
         }
@@ -155,10 +166,8 @@ Promise.prototype.then = function(onResolved,onRejected){
     return promise2 = new Promise(function (resolve,reject) {
       self.onResolvedCallback.push(function (value) {
         try{
-          var x = onResolved(self.data)
-          if(x instanceof Promise){
-            x.then(resolve,reject)
-          }
+          var x = onResolved(value)
+          resolvePromise(promise2,x,resolve,reject)
         }catch (e) {
           reject(e)
         }
@@ -166,10 +175,11 @@ Promise.prototype.then = function(onResolved,onRejected){
 
       self.onRejectedCallback.push(function (reason) {
         try{
-          var x = onRejected(self.data)
-          if(x instanceof Promise){
-            x.then(resolve.reject)
-          }
+          var x = onRejected(reason)
+          resolvePromise(promise2,x,resolve,reject)
+          // if(x instanceof Promise){
+          //   x.then(resolve.reject)
+          // }
         }catch (e) {
           reject(e)
         }
@@ -188,6 +198,7 @@ Promise.deferred = Promise.defer = function () {
     dfd.resolve = resolve;
     dfd.reject = reject;
   })
+  return dfd
 }
 
 
