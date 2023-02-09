@@ -26,4 +26,3 @@ const array = [fn1,fn2]
 
 runPromiseInSequence(array,'init')
 
-// TODO:总共20个请求，如何实现一次调用五个，错误则排队重新请求，二次错误则报错，中途报错不影响后续请求
