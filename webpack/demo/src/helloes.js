@@ -1,0 +1,1 @@
+export default sayHello = (name)=> `hello ${name}`

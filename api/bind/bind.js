@@ -116,3 +116,4 @@ var bindYve = person.myBind5(Yve, 22, 'engineer');
 var obj = new bindYve('female');
 obj.work; // 福报
 obj.clockIn(); // 996
+

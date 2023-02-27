@@ -1,0 +1,30 @@
+Installing 'webpack-cli' (running 'yarn add -D webpack-cli')...
+[1/5] Validating package.json...
+[2/5] Resolving packages...
+[3/5] Fetching packages...
+[4/5] Linking dependencies...
+[5/5] Building fresh packages...
+success Saved lockfile.
+success Saved 17 new dependencies.
+info Direct dependencies
+├─ speed-measure-webpack-plugin@1.5.0
+├─ webpack-bundle-analyzer@4.8.0
+└─ webpack-cli@5.0.1
+info All dependencies
+├─ @discoveryjs/json-ext@0.5.7
+├─ @polka/url@1.0.0-next.21
+├─ @webpack-cli/configtest@2.0.1
+├─ @webpack-cli/info@2.0.1
+├─ @webpack-cli/serve@2.0.1
+├─ colorette@2.0.19
+├─ envinfo@7.8.1
+├─ fastest-levenshtein@1.0.16
+├─ gzip-size@6.0.0
+├─ mrmime@1.0.1
+├─ rechoir@0.8.0
+├─ sirv@1.0.19
+├─ speed-measure-webpack-plugin@1.5.0
+├─ totalist@1.1.0
+├─ webpack-bundle-analyzer@4.8.0
+├─ webpack-cli@5.0.1
+└─ wildcard@2.0.0
